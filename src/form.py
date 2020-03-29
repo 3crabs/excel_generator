@@ -1,3 +1,5 @@
+from threading import Thread
+from time import time
 from tkinter import *
 from tkinter import filedialog as fd
 
@@ -35,20 +37,31 @@ def select_file():
     check_button_state()
 
 
+def work():
+    global message
+
+    start_time = time()
+
+    message.set('Чтение данных')
+    invoices = read_file(file_path.get())
+    i = 0
+    size = len(invoices)
+    for invoice in invoices:
+        make_invoice_file([""] + [str(a) for a in invoice], template_file_path, dir_path.get())
+        i += 1
+        current_time = time()
+        message.set('Выполнено ' + str(i) + '/' + str(size) + ', прошло: ' + str(int(current_time - start_time)) + 'с')
+
+
 def start():
     global file_path
     global dir_path
-    global message_label
+    global message
 
+    start_button["state"] = DISABLED
     message.set('Обрабротка начата')
-    invoices = read_file(file_path.get())
-    size = len(invoices)
-    i = 0
-    for invoice in invoices:
-        i += 1
-        make_invoice_file([""] + [str(a) for a in invoice], template_file_path, dir_path.get())
-        message.set(('Обработан файл №' + invoice[0] + ' ' + str(i) + '/' + str(size))[0:35])
-    message.set('Обработка закончена')
+    thread = Thread(target=work)
+    thread.start()
 
 
 def main():
