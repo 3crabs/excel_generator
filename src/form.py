@@ -1,38 +1,68 @@
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog as fd
+
+window = Tk()
+file_path = StringVar()
+dir_path = StringVar()
+button = None
+
+
+def check_button_state():
+    global button
+    button["state"] = NORMAL
+    if file_path is None:
+        button["state"] = DISABLED
+    if dir_path is None:
+        button["state"] = DISABLED
 
 
 def select_dir():
-    filename = filedialog.askopenfilename(initialdir="/",
-                                          title="Select file",
-                                          filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+    global dir_path
+    dir_name = fd.askdirectory(title='Выберите папку для сохранения результатов')
+    dir_path.set(dir_name)
+    check_button_state()
+
+
+def select_file():
+    global file_path
+    file_name = fd.askopenfile(title='Выберите файл данных', filetypes=[('xlsx files', ['.xlsx'])])
+    file_path.set(file_name.name)
+    check_button_state()
+
+
+def start():
+    print('start')
 
 
 def main():
-    window = Tk()
+    global window
+    global file_path
+    global dir_path
+    global button
+
     window.title("Создание накладных")
     window.geometry('332x111')
 
-    message = StringVar()
     file_label = Label(text="Путь к файлу:")
     file_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-    file_path = Entry(textvariable=message)
-    file_path.grid(row=0, column=1, padx=5, pady=5)
-    file_btn = Button(window, text="Выбрать файл")
-    file_btn.grid(column=2, row=0, padx=5, pady=5, sticky="e")
+    file_input = Entry(textvariable=file_path)
+    file_input.grid(row=0, column=1, padx=5, pady=5)
+    file_button = Button(window, text="Выбрать файл", command=select_file)
+    file_button.grid(column=2, row=0, padx=5, pady=5, sticky="e")
 
     dir_label = Label(text="Путь к папке:")
     dir_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-    dir_path = Entry(textvariable=message)
-    dir_path.grid(row=1, column=1, padx=5, pady=5)
-    dir_btn = Button(window, text="Выбрать папку")
-    dir_btn.grid(column=2, row=1, padx=5, pady=5, sticky="e")
+    dir_input = Entry(textvariable=dir_path)
+    dir_input.grid(row=1, column=1, padx=5, pady=5)
+    dir_button = Button(window, text="Выбрать папку", command=select_dir)
+    dir_button.grid(column=2, row=1, padx=5, pady=5, sticky="e")
 
     dir_label = Label(text="Заполните поля, нажмите кнопку."[0:35])
     dir_label.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="w")
 
-    btn = Button(window, text="Начать")
-    btn.grid(column=2, row=2, padx=5, pady=5, sticky="e")
+    button = Button(window, text="Начать", command=start)
+    button.grid(column=2, row=2, padx=5, pady=5, sticky="e")
+    button["state"] = DISABLED
 
     window.mainloop()
 
