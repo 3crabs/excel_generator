@@ -2,6 +2,7 @@ from threading import Thread
 from time import time
 from tkinter import *
 from tkinter import filedialog as fd
+from tkinter import messagebox
 
 from src.main import read_file, make_invoice_file
 
@@ -44,6 +45,7 @@ def work():
 
     message.set('Чтение данных')
     invoices = read_file(file_path.get())
+    message.set('Чтение данных завершено')
     i = 0
     size = len(invoices)
     for invoice in invoices:
@@ -51,7 +53,9 @@ def work():
         i += 1
         current_time = time()
         message.set('Выполнено ' + str(i) + '/' + str(size) + ', прошло: ' + str(int(current_time - start_time)) + 'с')
-
+        if i == size:
+            messagebox.showinfo("Готово", "Обработка завершена")
+            window.quit()
 
 def start():
     global file_path
