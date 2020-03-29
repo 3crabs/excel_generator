@@ -42,17 +42,3 @@ def make_invoice_file(invoice: list, template_file_path: str, save_dir_path: str
     sheet['CF45'] = invoice[5]
     sheet['CO45'] = invoice[6]
     wb.save(new_file_path)
-    print('Обработан файл №' + invoice[1])
-
-
-def main():
-    source_file_path = "../resources/Исходник.xlsx"
-    template_file_path = "../resources/Шаблон.xlsx"
-    save_dir_path = "../resources/save_dir"
-    invoices = read_file(source_file_path)
-    for invoice in invoices:
-        make_invoice_file([""] + [str(a) for a in invoice], template_file_path, save_dir_path)
-
-
-if __name__ == '__main__':
-    main()

@@ -1,19 +1,24 @@
 from tkinter import *
 from tkinter import filedialog as fd
 
+from src.main import read_file, make_invoice_file
+
+template_file_path = "../resources/Шаблон.xlsx"
 window = Tk()
 file_path = StringVar()
 dir_path = StringVar()
-button = None
+start_button = None
+message = StringVar()
+message_label = None
 
 
 def check_button_state():
-    global button
-    button["state"] = NORMAL
-    if file_path is None:
-        button["state"] = DISABLED
-    if dir_path is None:
-        button["state"] = DISABLED
+    global start_button
+    start_button["state"] = NORMAL
+    if file_path.get() is '':
+        start_button["state"] = DISABLED
+    if dir_path.get() is '':
+        start_button["state"] = DISABLED
 
 
 def select_dir():
@@ -31,14 +36,28 @@ def select_file():
 
 
 def start():
-    print('start')
+    global file_path
+    global dir_path
+    global message_label
+
+    message.set('Обрабротка начата')
+    invoices = read_file(file_path.get())
+    size = len(invoices)
+    i = 0
+    for invoice in invoices:
+        i += 1
+        make_invoice_file([""] + [str(a) for a in invoice], template_file_path, dir_path.get())
+        message.set(('Обработан файл №' + invoice[0] + ' ' + str(i) + '/' + str(size))[0:35])
+    message.set('Обработка закончена')
 
 
 def main():
     global window
     global file_path
     global dir_path
-    global button
+    global start_button
+    global message
+    global message_label
 
     window.title("Создание накладных")
     window.geometry('332x111')
@@ -57,12 +76,13 @@ def main():
     dir_button = Button(window, text="Выбрать папку", command=select_dir)
     dir_button.grid(column=2, row=1, padx=5, pady=5, sticky="e")
 
-    dir_label = Label(text="Заполните поля, нажмите кнопку."[0:35])
-    dir_label.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="w")
+    message_label = Label(textvariable=message)
+    message_label.grid(row=2, column=0, columnspan=2, padx=5, pady=5, sticky="w")
+    message.set("Заполните поля, нажмите кнопку."[0:35])
 
-    button = Button(window, text="Начать", command=start)
-    button.grid(column=2, row=2, padx=5, pady=5, sticky="e")
-    button["state"] = DISABLED
+    start_button = Button(window, text="Начать", command=start)
+    start_button.grid(column=2, row=2, padx=5, pady=5, sticky="e")
+    start_button["state"] = DISABLED
 
     window.mainloop()
 
